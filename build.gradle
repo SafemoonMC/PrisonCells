@@ -1,0 +1,117 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+plugins {
+    id "java"
+    id "io.freefair.lombok" version "6.3.0"
+    id "com.github.johnrengelman.shadow" version "7.1.0"
+    id "com.sidneysimmons.gradle-plugin-external-properties" version "2.0.0"
+}
+
+lombok { version = "1.18.22" }
+
+externalProperties { propertiesFileResolver project.file("secrets.properties") }
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url "https://libraries.minecraft.net" }
+    maven { url = uri('https://repo.extendedclip.com/content/repositories/placeholderapi/') }
+    maven {
+        url = "https://nexus.mooncraft.dev/repository/spigots/"
+        credentials.username = props.get("nexus-username", properties.get("nexus-username") as String)
+        credentials.password = props.get("nexus-password", properties.get("nexus-password") as String)
+    }
+    maven {
+        url = "https://nexus.mooncraft.dev/repository/mooncraft-releases/"
+        credentials.username = props.get("nexus-username", properties.get("nexus-username") as String)
+        credentials.password = props.get("nexus-password", properties.get("nexus-password") as String)
+    }
+}
+
+dependencies {
+    implementation 'me.eduardwayland.mooncraft.waylander:WaylanderCommand:1.0.1'
+    implementation 'me.eduardwayland.mooncraft.waylander:WaylanderScheduler:1.0.0'
+    implementation 'me.eduardwayland.mooncraft.waylander:WaylanderDatabase:1.0.0'
+
+    implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.5'
+    compileOnly 'org.spigotmc:Airplane:1.17.1'
+
+    compileOnly 'org.jetbrains:annotations:23.0.0'
+    annotationProcessor 'org.jetbrains:annotations:23.0.0'
+}
+
+shadowJar {
+    dependencies {
+        exclude(dependency('com.mojang:brigadier:.*'))
+//        exclude(dependency('com.google.errorprone:error_prone_annotations:.*'))
+//        exclude(dependency('org.checkerframework:checker-qual:.*'))
+    }
+    relocate 'com.zaxxer', 'gg.mooncraft.minecraft.prisoncells.libs.com.zaxxer'
+    relocate 'org.mariadb.jdbc', 'gg.mooncraft.minecraft.prisoncells.libs.org.mariadb.jdbc'
+    relocate 'me.eduardwayland.mooncraft.waylander', 'gg.mooncraft.minecraft.prisoncells.libs.waylander'
+}
+
+sourceSets {
+    main.java.srcDirs = ['src']
+    main.resources.srcDirs = ['resources']
+}
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+    sourceCompatibility = JavaVersion.VERSION_16
+}
+
+processResources {
+    filter ReplaceTokens, tokens: [
+            "plugin-author"     : project.property("plugin-author"),
+            "plugin-version"    : project.property("plugin-version"),
+            "plugin-api-version": project.property("plugin-api-version")
+    ]
+}
+
+jar {
+    archiveClassifier.set("base")
+}
+sourcesJar {
+    archiveClassifier.set("sources")
+}
+javadocJar {
+    archiveClassifier.set("javadocs")
+}
+shadowJar {
+    archiveClassifier.set("")
+}
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+tasks.withType(Javadoc) {
+    options.encoding = 'UTF-8'
+}
+
+task buildBase(type: Copy) {
+    from collect { it.tasks.withType(Jar).named("jar") }
+    into "/COMPILED-JARS/base"
+}
+task buildSources(type: Copy) {
+    from collect { it.tasks.withType(Jar).named("sourcesJar") }
+    into "/COMPILED-JARS/sources"
+}
+task buildJavadoc(type: Copy) {
+    from collect { it.tasks.withType(Jar).named("javadocJar") }
+    into "/COMPILED-JARS/javadocs"
+}
+task buildShadowjar(type: Copy) {
+    from collect { it.tasks.withType(Jar).named("shadowJar") }
+    into "/COMPILED-JARS"
+}
+task buildAll(type: Copy) {
+    dependsOn clean
+    dependsOn buildBase
+    dependsOn buildJavadoc
+    dependsOn buildSources
+    dependsOn buildShadowjar
+}
+
+group 'gg.mooncraft.minecraft.prisoncells'
+version '1.0.0'
