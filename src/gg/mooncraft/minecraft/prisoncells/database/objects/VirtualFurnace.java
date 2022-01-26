@@ -6,6 +6,7 @@ import me.eduardwayland.mooncraft.waylander.database.entities.EntityChild;
 
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.sql.Timestamp;
 import java.util.UUID;
@@ -37,7 +38,7 @@ public final class VirtualFurnace implements EntityChild<PrisonUser> {
         this.uniqueId = UUID.randomUUID();
     }
 
-    public VirtualFurnace(@NotNull PrisonUser prisonUser, @NotNull UUID uniqueId, @NotNull ItemStack fuel, @NotNull ItemStack input, @NotNull ItemStack output, int cookTime, int cookTimeTotal, int fuelTime, int fuelTimeTotal, float experience, @NotNull Timestamp timestamp) {
+    public VirtualFurnace(@NotNull PrisonUser prisonUser, @NotNull UUID uniqueId, @Nullable ItemStack fuel, @Nullable ItemStack input, @Nullable ItemStack output, int cookTime, int cookTimeTotal, int fuelTime, int fuelTimeTotal, float experience, @NotNull Timestamp timestamp) {
         this.uniqueId = uniqueId;
         this.parent = prisonUser;
         this.fuel = fuel;
