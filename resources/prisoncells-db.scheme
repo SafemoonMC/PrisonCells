@@ -6,14 +6,17 @@ CREATE TABLE IF NOT EXISTS prisoncells_users
 );
 CREATE TABLE IF NOT EXISTS prisoncells_users_furnaces
 (
-    unique_id       CHAR(36) NOT NULL PRIMARY KEY,
-    material_fuel   VARCHAR(36),
-    material_input  VARCHAR(36),
-    material_output VARCHAR(36),
+    unique_id       CHAR(36) NOT NULL,
+    user_unique_id  CHAR(36) NOT NULL,
+    material_fuel   MEDIUMBLOB,
+    material_input  MEDIUMBLOB,
+    material_output MEDIUMBLOB,
     cook_time       INT,
     cook_time_total INT,
     fuel_time       INT,
     fuel_time_total INT,
-    experience      INT,
-    FOREIGN KEY (unique_id) REFERENCES prisoncells_users (unique_id)
+    experience      FLOAT,
+    timestamp       TIMESTAMP,
+    PRIMARY KEY (unique_id, user_unique_id),
+    FOREIGN KEY (user_unique_id) REFERENCES prisoncells_users (unique_id)
 );
