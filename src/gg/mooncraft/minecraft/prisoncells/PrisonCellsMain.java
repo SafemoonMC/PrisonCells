@@ -16,6 +16,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import gg.mooncraft.minecraft.prisoncells.handlers.commands.Commands;
+import gg.mooncraft.minecraft.prisoncells.handlers.listeners.MenuListeners;
+import gg.mooncraft.minecraft.prisoncells.managers.UserManager;
 import gg.mooncraft.minecraft.prisoncells.scheduler.BukkitScheduler;
 import gg.mooncraft.minecraft.prisoncells.utilities.BukkitDatabaseUtilities;
 import gg.mooncraft.minecraft.prisoncells.utilities.IOUtils;
@@ -34,6 +37,8 @@ public class PrisonCellsMain extends JavaPlugin {
     private @Nullable Database database;
     private final @NotNull BukkitScheduler scheduler;
 
+    private final @NotNull UserManager userManager;
+
     /*
     Constructor
      */
@@ -44,6 +49,9 @@ public class PrisonCellsMain extends JavaPlugin {
 
         // Load WaylanderScheduler
         this.scheduler = new BukkitScheduler(this);
+
+        // Load UserManager
+        this.userManager = new UserManager();
     }
 
     /*
@@ -67,12 +75,30 @@ public class PrisonCellsMain extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        // Show startup information
+        getLogger().info("Database: " + (getDatabase() != null ? "running for " + getDatabase().getIdentifier() : "not started"));
 
+        // Stop server if database are not loaded
+        if (getDatabase() == null) {
+            setEnabled(false);
+            return;
+        }
+
+        // Load commands
+        Commands.loadAll();
+        
+        // Load listeners
+        new MenuListeners();
+
+        // Show enabling information
+        getLogger().info("Enabled!");
     }
 
     @Override
     public void onDisable() {
-
+        // Shutdown processes
+        shutdown();
+        getLogger().info("Disabled!");
     }
 
     /*
@@ -96,7 +122,7 @@ public class PrisonCellsMain extends JavaPlugin {
      *
      * @param literalCommand the command to register
      */
-    protected void registerCommand(@NotNull LiteralCommand<?> literalCommand) {
+    public void registerCommand(@NotNull LiteralCommand<?> literalCommand) {
         // Load Brigadier instance if not loaded yet
         if (getBrigadier() == null) {
             try {
