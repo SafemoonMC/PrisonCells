@@ -1,0 +1,5 @@
+name: PrisonCells
+main: gg.mooncraft.minecraft.prisoncells.PrisonCellsMain
+version: @plugin-version@
+api-version: @plugin-api-version@
+author: @plugin-author@
