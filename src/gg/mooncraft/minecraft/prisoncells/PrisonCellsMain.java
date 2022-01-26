@@ -10,6 +10,7 @@ import me.eduardwayland.mooncraft.waylander.database.connection.hikari.impl.Mari
 import me.eduardwayland.mooncraft.waylander.database.scheme.db.NormalDatabaseScheme;
 import me.eduardwayland.mooncraft.waylander.database.scheme.file.NormalSchemeFile;
 
+import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -146,5 +147,16 @@ public class PrisonCellsMain extends JavaPlugin {
                 .databaseScheme(normalDatabaseScheme)
                 .connectionFactory(new MariaDBConnectionFactory(getName(), credentials))
                 .build();
+    }
+
+    /*
+    Static Methods
+     */
+    public static @NotNull PrisonCellsMain getInstance() {
+        return PrisonCellsMain.getPlugin(PrisonCellsMain.class);
+    }
+
+    public static @NotNull NamespacedKey createKey(@NotNull String key) {
+        return new NamespacedKey(PrisonCellsMain.getInstance(), key);
     }
 }
