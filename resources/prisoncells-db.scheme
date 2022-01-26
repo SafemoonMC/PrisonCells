@@ -8,9 +8,9 @@ CREATE TABLE IF NOT EXISTS prisoncells_users_furnaces
 (
     unique_id       CHAR(36) NOT NULL,
     user_unique_id  CHAR(36) NOT NULL,
-    material_fuel   MEDIUMBLOB,
-    material_input  MEDIUMBLOB,
-    material_output MEDIUMBLOB,
+    fuel            MEDIUMBLOB,
+    input           MEDIUMBLOB,
+    output          MEDIUMBLOB,
     cook_time       INT,
     cook_time_total INT,
     fuel_time       INT,
