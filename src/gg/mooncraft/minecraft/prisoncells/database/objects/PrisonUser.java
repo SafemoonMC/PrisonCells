@@ -8,6 +8,8 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import gg.mooncraft.minecraft.prisoncells.database.PrisonUserDAO;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -49,7 +51,12 @@ public final class PrisonUser implements EntityParent<PrisonUser> {
      */
     public void updateStorage(ItemStack[] storage) {
         this.storage = storage;
-        //TODO update
+        PrisonUserDAO.update(this);
+    }
+
+    public void updateStorageRows() {
+        this.storageRows.incrementAndGet();
+        PrisonUserDAO.update(this);
     }
 
     public int getStorageRows() {
