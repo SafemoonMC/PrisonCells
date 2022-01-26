@@ -32,7 +32,9 @@ dependencies {
     implementation 'me.eduardwayland.mooncraft.waylander:WaylanderCommand:1.0.1'
     implementation 'me.eduardwayland.mooncraft.waylander:WaylanderScheduler:1.0.0'
     implementation 'me.eduardwayland.mooncraft.waylander:WaylanderDatabase:1.0.0'
+    implementation 'me.eduardwayland.mooncraft.waylander:WaylanderItems:1.0.0'
 
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.0.5'
     implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.5'
     compileOnly 'org.spigotmc:Airplane:1.17.1'
 
@@ -48,6 +50,7 @@ shadowJar {
     }
     relocate 'com.zaxxer', 'gg.mooncraft.minecraft.prisoncells.libs.com.zaxxer'
     relocate 'org.mariadb.jdbc', 'gg.mooncraft.minecraft.prisoncells.libs.org.mariadb.jdbc'
+    relocate 'com.github.benmanes.caffeine', 'gg.mooncraft.minecraft.prisoncells.libs.com.github.benmanes.caffeine'
     relocate 'me.eduardwayland.mooncraft.waylander', 'gg.mooncraft.minecraft.prisoncells.libs.waylander'
 }
 
