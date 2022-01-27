@@ -10,8 +10,12 @@ import me.eduardwayland.mooncraft.waylander.database.connection.hikari.impl.Mari
 import me.eduardwayland.mooncraft.waylander.database.scheme.db.NormalDatabaseScheme;
 import me.eduardwayland.mooncraft.waylander.database.scheme.file.NormalSchemeFile;
 
+import net.milkbowl.vault.economy.Economy;
+
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -33,8 +37,10 @@ public class PrisonCellsMain extends JavaPlugin {
     /*
     Fields
      */
+    private @Nullable Economy economy;
     private @Nullable Brigadier brigadier;
     private @Nullable Database database;
+
     private final @NotNull BukkitScheduler scheduler;
 
     private final @NotNull UserManager userManager;
@@ -71,6 +77,12 @@ public class PrisonCellsMain extends JavaPlugin {
             getLogger().severe("The plugin cannot be loaded. Connection to the database cannot be created. Error: ");
             e.printStackTrace();
         }
+
+        // Load economy
+        if (!loadEconomy()) {
+            setEnabled(false);
+            return;
+        }
     }
 
     @Override
@@ -86,7 +98,7 @@ public class PrisonCellsMain extends JavaPlugin {
 
         // Load commands
         Commands.loadAll();
-        
+
         // Load listeners
         new MenuListeners();
 
@@ -115,6 +127,19 @@ public class PrisonCellsMain extends JavaPlugin {
         // Close the scheduler
         this.scheduler.shutdownExecutor();
         this.scheduler.shutdownScheduler();
+    }
+
+    /**
+     * Loads Vault dependency if any
+     *
+     * @return true if economy provider has been found, false otherwise
+     */
+    private boolean loadEconomy() {
+        if (Bukkit.getPluginManager().getPlugin("Vault") == null) return false;
+        RegisteredServiceProvider<Economy> rsp = Bukkit.getServicesManager().getRegistration(Economy.class);
+        if (rsp == null) return false;
+        this.economy = rsp.getProvider();
+        return true;
     }
 
     /**

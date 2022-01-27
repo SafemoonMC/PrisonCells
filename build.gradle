@@ -36,6 +36,8 @@ dependencies {
 
     implementation 'com.github.ben-manes.caffeine:caffeine:3.0.5'
     implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.5'
+
+    compileOnly "com.github.MilkBowl:VaultAPI:1.7"
     compileOnly 'org.spigotmc:Airplane:1.17.1'
 
     compileOnly 'org.jetbrains:annotations:23.0.0'
@@ -45,8 +47,8 @@ dependencies {
 shadowJar {
     dependencies {
         exclude(dependency('com.mojang:brigadier:.*'))
-//        exclude(dependency('com.google.errorprone:error_prone_annotations:.*'))
-//        exclude(dependency('org.checkerframework:checker-qual:.*'))
+        exclude(dependency('com.google.errorprone:error_prone_annotations:.*'))
+        exclude(dependency('org.checkerframework:checker-qual:.*'))
     }
     relocate 'com.zaxxer', 'gg.mooncraft.minecraft.prisoncells.libs.com.zaxxer'
     relocate 'org.mariadb.jdbc', 'gg.mooncraft.minecraft.prisoncells.libs.org.mariadb.jdbc'
