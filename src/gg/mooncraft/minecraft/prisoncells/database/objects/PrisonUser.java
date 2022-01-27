@@ -36,7 +36,7 @@ public final class PrisonUser implements EntityParent<PrisonUser> {
         this.uniqueId = uniqueId;
         this.furnaceList = new ArrayList<>();
         this.storageRows = new AtomicInteger(1);
-        this.storage = new ItemStack[54];
+        this.storage = new ItemStack[0];
     }
 
     public PrisonUser(@NotNull UUID uniqueId, ItemStack[] storage, int storageRows) {
