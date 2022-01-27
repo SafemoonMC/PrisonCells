@@ -26,7 +26,7 @@ public final class Commands {
                 .executes(commandSender -> {
                     PrisonCellsMain.getInstance().getUserManager().readUser(commandSender.getUniqueId()).thenAccept(prisonUser -> {
                         StorageMenu storageMenu = new StorageMenu(prisonUser);
-                        commandSender.openInventory(storageMenu.getInventory());
+                        PrisonCellsMain.getInstance().getScheduler().executeSync(() -> commandSender.openInventory(storageMenu.getInventory()));
                     });
                 })
                 .build();
