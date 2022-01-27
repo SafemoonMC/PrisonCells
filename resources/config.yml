@@ -40,3 +40,17 @@ mysql:
       characterEncoding: utf8
       #useSSL: false
       #verifyServerCertificate: false
+####################
+# Settings
+####################
+prices:
+  furnaces:
+    1: 1000
+    2: 2000
+    3: 3000
+    4: 4000
+  storage-rows:
+    2: 1000
+    3: 2000
+    4: 3000
+    5: 4000
