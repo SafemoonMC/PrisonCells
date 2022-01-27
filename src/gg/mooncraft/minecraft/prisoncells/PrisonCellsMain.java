@@ -20,6 +20,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import gg.mooncraft.minecraft.prisoncells.config.Configuration;
 import gg.mooncraft.minecraft.prisoncells.handlers.commands.Commands;
 import gg.mooncraft.minecraft.prisoncells.handlers.listeners.MenuListeners;
 import gg.mooncraft.minecraft.prisoncells.managers.UserManager;
@@ -44,6 +45,7 @@ public class PrisonCellsMain extends JavaPlugin {
     private final @NotNull BukkitScheduler scheduler;
 
     private final @NotNull UserManager userManager;
+    private final @NotNull Configuration configuration;
 
     /*
     Constructor
@@ -52,6 +54,7 @@ public class PrisonCellsMain extends JavaPlugin {
         super();
         // Load configuration
         saveDefaultConfig();
+        this.configuration = new Configuration(getConfig());
 
         // Load WaylanderScheduler
         this.scheduler = new BukkitScheduler(this);
