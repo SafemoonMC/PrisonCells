@@ -25,8 +25,11 @@ public final class Commands {
                 .<Player>name("cells").permission(new Permission("prisoncells.cells", PermissionDefault.TRUE))
                 .executes(commandSender -> {
                     PrisonCellsMain.getInstance().getUserManager().readUser(commandSender.getUniqueId()).thenAccept(prisonUser -> {
-                        StorageMenu storageMenu = new StorageMenu(prisonUser);
+                        StorageMenu storageMenu = new StorageMenu(commandSender, prisonUser);
                         PrisonCellsMain.getInstance().getScheduler().executeSync(() -> commandSender.openInventory(storageMenu.getInventory()));
+                    }).exceptionally(t -> {
+                        t.printStackTrace();
+                        return null;
                     });
                 })
                 .build();
