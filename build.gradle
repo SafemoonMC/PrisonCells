@@ -16,6 +16,8 @@ repositories {
     mavenCentral()
     maven { url "https://libraries.minecraft.net" }
     maven { url = uri('https://repo.extendedclip.com/content/repositories/placeholderapi/') }
+    maven { url = uri('https://jitpack.io') }
+    maven { url 'https://hub.spigotmc.org/nexus/content/repositories/public/' }
     maven {
         url = "https://nexus.mooncraft.dev/repository/spigots/"
         credentials.username = props.get("nexus-username", properties.get("nexus-username") as String)
@@ -42,6 +44,10 @@ dependencies {
 
     compileOnly 'org.jetbrains:annotations:23.0.0'
     annotationProcessor 'org.jetbrains:annotations:23.0.0'
+
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testImplementation 'com.github.seeseemelk:MockBukkit-v1.17:1.12.0'
 }
 
 shadowJar {
@@ -56,11 +62,6 @@ shadowJar {
     relocate 'me.eduardwayland.mooncraft.waylander', 'gg.mooncraft.minecraft.prisoncells.libs.waylander'
 }
 
-sourceSets {
-    main.java.srcDirs = ['src']
-    main.resources.srcDirs = ['resources']
-}
-
 java {
     withSourcesJar()
     withJavadocJar()
@@ -73,6 +74,10 @@ processResources {
             "plugin-version"    : project.property("plugin-version"),
             "plugin-api-version": project.property("plugin-api-version")
     ]
+}
+
+test {
+    useJUnitPlatform()
 }
 
 jar {
