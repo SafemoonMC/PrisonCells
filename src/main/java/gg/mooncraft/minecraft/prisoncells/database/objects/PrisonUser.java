@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import gg.mooncraft.minecraft.prisoncells.database.PrisonUserDAO;
+import gg.mooncraft.minecraft.prisoncells.database.VirtualFurnaceDAO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,8 +60,18 @@ public final class PrisonUser implements EntityParent<PrisonUser> {
         PrisonUserDAO.update(this);
     }
 
+    public void updateFurnaceCount() {
+        VirtualFurnace virtualFurnace = new VirtualFurnace(this);
+        this.furnaceList.add(virtualFurnace);
+        VirtualFurnaceDAO.create(virtualFurnace);
+    }
+
     public int getStorageRows() {
         return this.storageRows.get();
+    }
+
+    public int getFurnaceCount() {
+        return this.furnaceList.size();
     }
 
     public @Nullable ItemStack[] getStorage() {
@@ -72,7 +83,7 @@ public final class PrisonUser implements EntityParent<PrisonUser> {
      */
     @Override
     public @NotNull CompletableFuture<PrisonUser> withChildren() {
-        CompletableFuture<?> furnaceFuture = CompletableFuture.completedFuture(null);
+        CompletableFuture<?> furnaceFuture = VirtualFurnaceDAO.read(this).thenAccept(this.furnaceList::addAll);
         return furnaceFuture.thenApply(v -> this);
     }
 }
