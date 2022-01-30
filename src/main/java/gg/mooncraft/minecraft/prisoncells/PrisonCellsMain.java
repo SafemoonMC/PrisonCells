@@ -23,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 import gg.mooncraft.minecraft.prisoncells.config.Configuration;
 import gg.mooncraft.minecraft.prisoncells.handlers.commands.Commands;
 import gg.mooncraft.minecraft.prisoncells.handlers.listeners.MenuListeners;
+import gg.mooncraft.minecraft.prisoncells.managers.FurnaceManager;
 import gg.mooncraft.minecraft.prisoncells.managers.UserManager;
 import gg.mooncraft.minecraft.prisoncells.scheduler.BukkitScheduler;
 import gg.mooncraft.minecraft.prisoncells.utilities.BukkitDatabaseUtilities;
@@ -45,6 +46,8 @@ public class PrisonCellsMain extends JavaPlugin {
     private final @NotNull BukkitScheduler scheduler;
 
     private final @NotNull UserManager userManager;
+    private final @NotNull FurnaceManager furnaceManager;
+
     private final @NotNull Configuration configuration;
 
     /*
@@ -61,6 +64,7 @@ public class PrisonCellsMain extends JavaPlugin {
 
         // Load UserManager
         this.userManager = new UserManager();
+        this.furnaceManager = new FurnaceManager();
     }
 
     /*
