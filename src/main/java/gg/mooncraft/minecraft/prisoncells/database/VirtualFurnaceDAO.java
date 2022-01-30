@@ -32,7 +32,7 @@ public final class VirtualFurnaceDAO {
     Static Methods
      */
     public static @NotNull CompletableFuture<List<VirtualFurnace>> read(@NotNull PrisonUser prisonUser) {
-        Query query = Query.single("SELECT * FROM " + TABLE_NAME + " WHERE unique_id = ?;")
+        Query query = Query.single("SELECT * FROM " + TABLE_NAME + " WHERE user_unique_id = ?;")
                 .with(prisonUser.getUniqueId().toString())
                 .build();
         return PrisonCellsMain.getInstance().getDatabase().getDatabaseManager().executeQuery(query, resultSetIterator -> {
