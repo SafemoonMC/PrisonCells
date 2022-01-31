@@ -75,7 +75,7 @@ public final class VirtualFurnace implements EntityChild<PrisonUser> {
         VirtualFurnaceDAO.update(this);
     }
 
-    public void resume() {
+    public void resume(@NotNull FurnaceInventory furnaceInventory) {
         this.resuming = true;
         int ticks = (int) (Duration.between(timestamp.toInstant(), Instant.now()).toMillis() / 20);
 
@@ -110,66 +110,22 @@ public final class VirtualFurnace implements EntityChild<PrisonUser> {
                 this.input.setAmount(newInput);
             }
             if (this.output != null) {
-                this.output.setAmount(newOutput);
+                this.output.setAmount(this.output.getAmount() + newOutput);
             } else {
                 VirtualFurnaceRecipe virtualFurnaceRecipe = FurnaceUtilities.getRecipeByIngredient(this.input.getType());
                 if (virtualFurnaceRecipe != null) {
                     this.output = new ItemStack(virtualFurnaceRecipe.getResult(), newOutput);
                 }
             }
+        } else {
+            this.cookTime = 0;
+            this.cookTimeTotal = 0;
         }
+        furnaceInventory.setItem(0, getInput());
+        furnaceInventory.setItem(1, getFuel());
+        furnaceInventory.setItem(2, getOutput());
         this.resuming = false;
     }
-
-    public int calculateNecessaryFuelTicks(int ticks) {
-        int necessaryFuelTicks = 0;
-        if (this.fuel != null) {
-            Fuel fuel = FurnaceUtilities.getFuelByMaterial(this.fuel.getType());
-
-            necessaryFuelTicks = this.fuelTime;
-            if (fuel != null && fuel.getBurnTime() != this.fuelTimeTotal) {
-                necessaryFuelTicks += fuel.getBurnTime() * this.fuel.getAmount();
-                this.fuelTimeTotal = fuel.getBurnTime();
-            } else {
-                necessaryFuelTicks += this.fuelTimeTotal * this.fuel.getAmount();
-            }
-        }
-        return necessaryFuelTicks;
-    }
-
-    public int calculateFuelAmount(int ticks) {
-        int necessaryFuelTicks = calculateNecessaryFuelTicks(ticks);
-        int newFuelTicks = Math.max(0, necessaryFuelTicks - ticks);
-
-        return (int) Math.floor((float) newFuelTicks / this.fuelTimeTotal);
-    }
-
-    public int calculateFuelTicks(int ticks) {
-        int necessaryFuelTicks = calculateNecessaryFuelTicks(ticks);
-        int newFuelTicks = Math.max(0, necessaryFuelTicks - ticks);
-        return newFuelTicks % this.fuelTimeTotal;
-    }
-
-    public int calculateInputAmount(int ticks) {
-        int necessaryCookTicks = getCookTimeTotal() * this.input.getAmount();
-        int cookTicks = ticks + getCookTime();
-        int newCookTicks = Math.max(0, necessaryCookTicks - cookTicks);
-
-        return (int) Math.ceil((float) newCookTicks / this.cookTimeTotal);
-    }
-
-    public int calculateInputTicks(int ticks) {
-        int necessaryCookTicks = getCookTimeTotal() * this.input.getAmount();
-        int cookTicks = ticks + getCookTime();
-        int newCookTicks = Math.max(0, necessaryCookTicks - cookTicks);
-
-        return this.cookTimeTotal - (newCookTicks % this.cookTimeTotal);
-    }
-
-    public int calculateOutputAmount(int ticks) {
-        return this.input.getAmount() - calculateInputAmount(ticks);
-    }
-
 
     public void extract(@NotNull Player player, @NotNull FurnaceInventory furnaceInventory) {
         player.giveExp((int) this.experience);
@@ -237,37 +193,6 @@ public final class VirtualFurnace implements EntityChild<PrisonUser> {
         this.locked = false;
     }
 
-    private void updateInventory(@NotNull FurnaceInventory furnaceInventory) {
-        furnaceInventory.setFuel(this.fuel);
-        furnaceInventory.setSmelting(this.input);
-        furnaceInventory.setResult(this.output);
-    }
-
-    private void updateInventoryView(@NotNull FurnaceInventory furnaceInventory) {
-        ItemStack input = furnaceInventory.getItem(0);
-        if (!Objects.equals(this.input, input)) {
-            this.input = input;
-            System.out.println("Updated input");
-        }
-        ItemStack fuel = furnaceInventory.getItem(1);
-        if (!Objects.equals(this.fuel, fuel)) {
-            this.fuel = fuel;
-            System.out.println("Updated fuel");
-        }
-        ItemStack output = furnaceInventory.getItem(2);
-        if (!Objects.equals(this.output, output)) {
-            this.output = output;
-            System.out.println("Updated output");
-        }
-        furnaceInventory.getViewers().forEach(humanEntity -> {
-            InventoryView view = humanEntity.getOpenInventory();
-            view.setProperty(InventoryView.Property.COOK_TIME, this.cookTime);
-            view.setProperty(InventoryView.Property.TICKS_FOR_CURRENT_SMELTING, this.cookTimeTotal);
-            view.setProperty(InventoryView.Property.BURN_TIME, this.fuelTime);
-            view.setProperty(InventoryView.Property.TICKS_FOR_CURRENT_FUEL, this.fuelTimeTotal);
-        });
-    }
-
     private boolean canCook() {
         if (this.input == null) return false;
         VirtualFurnaceRecipe virtualFurnaceRecipe = FurnaceUtilities.getRecipeByIngredient(this.input.getType());
@@ -285,5 +210,91 @@ public final class VirtualFurnace implements EntityChild<PrisonUser> {
     private boolean canBurn() {
         if (this.fuel == null) return false;
         return FurnaceUtilities.getFuelByMaterial(this.fuel.getType()) != null;
+    }
+
+    private void updateInventory(@NotNull FurnaceInventory furnaceInventory) {
+        furnaceInventory.setFuel(this.fuel);
+        furnaceInventory.setSmelting(this.input);
+        furnaceInventory.setResult(this.output);
+    }
+
+    private void updateInventoryView(@NotNull FurnaceInventory furnaceInventory) {
+        ItemStack input = furnaceInventory.getItem(0);
+        if (!Objects.equals(this.input, input)) {
+            this.input = input;
+        }
+        ItemStack fuel = furnaceInventory.getItem(1);
+        if (!Objects.equals(this.fuel, fuel)) {
+            this.fuel = fuel;
+        }
+        ItemStack output = furnaceInventory.getItem(2);
+        if (!Objects.equals(this.output, output)) {
+            this.output = output;
+        }
+        furnaceInventory.getViewers().forEach(humanEntity -> {
+            InventoryView view = humanEntity.getOpenInventory();
+            view.setProperty(InventoryView.Property.COOK_TIME, this.cookTime);
+            view.setProperty(InventoryView.Property.TICKS_FOR_CURRENT_SMELTING, this.cookTimeTotal);
+            view.setProperty(InventoryView.Property.BURN_TIME, this.fuelTime);
+            view.setProperty(InventoryView.Property.TICKS_FOR_CURRENT_FUEL, this.fuelTimeTotal);
+        });
+    }
+
+    private int calculateNecessaryFuelTicks(int ticks) {
+        int necessaryFuelTicks = 0;
+        if (this.fuel != null) {
+            Fuel fuel = FurnaceUtilities.getFuelByMaterial(this.fuel.getType());
+
+            necessaryFuelTicks = this.fuelTime;
+            if (fuel != null && fuel.getBurnTime() != this.fuelTimeTotal) {
+                necessaryFuelTicks += fuel.getBurnTime() * this.fuel.getAmount();
+                this.fuelTimeTotal = fuel.getBurnTime();
+            } else {
+                necessaryFuelTicks += this.fuelTimeTotal * this.fuel.getAmount();
+            }
+        }
+        return necessaryFuelTicks;
+    }
+
+    private int calculateFuelAmount(int ticks) {
+        int necessaryFuelTicks = calculateNecessaryFuelTicks(ticks);
+        int newFuelTicks = Math.max(0, necessaryFuelTicks - ticks);
+
+        return (int) Math.floor((float) newFuelTicks / this.fuelTimeTotal);
+    }
+
+    private int calculateFuelTicks(int ticks) {
+        int necessaryFuelTicks = calculateNecessaryFuelTicks(ticks);
+        int newFuelTicks = Math.max(0, necessaryFuelTicks - ticks);
+        return newFuelTicks % this.fuelTimeTotal;
+    }
+
+    private int calculateInputAmount(int ticks) {
+        int necessaryCookTicks = getCookTimeTotal() * this.input.getAmount();
+        int cookTicks = ticks + getCookTime();
+        int newCookTicks = Math.max(0, necessaryCookTicks - cookTicks);
+
+        return (int) Math.ceil((float) newCookTicks / this.cookTimeTotal);
+    }
+
+    private int calculateInputTicks(int ticks) {
+        int necessaryCookTicks = getCookTimeTotal() * this.input.getAmount();
+        int cookTicks = ticks + getCookTime();
+        int newCookTicks = Math.max(0, necessaryCookTicks - cookTicks);
+
+        return this.cookTimeTotal - (newCookTicks % this.cookTimeTotal);
+    }
+
+    private int calculateOutputAmount(int ticks) {
+        return this.input.getAmount() - calculateInputAmount(ticks);
+    }
+
+    public double getCookTimeLeft() {
+        int timeLeft = this.cookTimeTotal - this.cookTime;
+        return (double) timeLeft / 20;
+    }
+
+    public double getFuelTimeLeft() {
+        return (double) this.fuelTime / 20;
     }
 }

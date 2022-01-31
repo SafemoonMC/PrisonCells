@@ -34,8 +34,12 @@ public class MenuListeners implements Listener {
     @EventHandler
     public void on(@NotNull PlayerQuitEvent e) {
         Player player = e.getPlayer();
-        PrisonCellsMain.getInstance().getFurnaceManager().getFurnaceMenu(player).ifPresent(furnaceMenu -> {
-            PrisonCellsMain.getInstance().getFurnaceManager().delFurnace(furnaceMenu);
+        PrisonCellsMain.getInstance().getFurnaceManager().getMenuCycle(player).ifPresent(menuCycle -> {
+            menuCycle.getCellMenu().getOwnFurnaceMap().values().forEach(furnaceMenu -> {
+                furnaceMenu.getFurnaceTicker().stop();
+                furnaceMenu.getVirtualFurnace().update();
+            });
+            PrisonCellsMain.getInstance().getFurnaceManager().delMenuCycle(menuCycle);
         });
     }
 
@@ -108,8 +112,19 @@ public class MenuListeners implements Listener {
             }
             storageMenu.getPrisonUser().updateStorage(itemStackArray);
         }
-        PrisonCellsMain.getInstance().getFurnaceManager().getFurnaceMenu(player).ifPresent(furnaceMenu -> {
-            PrisonCellsMain.getInstance().getFurnaceManager().delFurnace(furnaceMenu);
+        PrisonCellsMain.getInstance().getFurnaceManager().getMenuCycle(player).ifPresent(menuCycle -> {
+            if (menuCycle.isLast()) {
+                menuCycle.getCellMenu().getOwnFurnaceMap().values().forEach(furnaceMenu -> {
+                    furnaceMenu.getFurnaceTicker().stop();
+                    furnaceMenu.getVirtualFurnace().update();
+                });
+                PrisonCellsMain.getInstance().getFurnaceManager().delMenuCycle(menuCycle);
+                return;
+            }
+
+            if ((menuCycle.getStorageMenu() != null || menuCycle.getFurnaceMenu() != null) && e.getReason() != InventoryCloseEvent.Reason.PLUGIN) {
+                Bukkit.getScheduler().runTaskLater(PrisonCellsMain.getInstance(), menuCycle::openCellMenu, 5);
+            }
         });
     }
 }

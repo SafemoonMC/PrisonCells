@@ -14,21 +14,24 @@ public final class FurnaceManager {
     /*
     Fields
      */
-    private final @NotNull List<FurnaceMenu> furnaceMenuList = new ArrayList<>();
+    private final @NotNull List<MenuCycle> menuCycleList = new ArrayList<>();
 
     /*
     Methods
      */
-    public void addFurnace(@NotNull FurnaceMenu furnaceMenu) {
-        this.furnaceMenuList.add(furnaceMenu);
+    public void addMenuCycle(@NotNull MenuCycle menuCycle) {
+        this.menuCycleList.add(menuCycle);
     }
 
-    public void delFurnace(@NotNull FurnaceMenu furnaceMenu) {
-        furnaceMenu.getFurnaceTicker().stop();
-        this.furnaceMenuList.remove(furnaceMenu);
+    public void delMenuCycle(@NotNull MenuCycle menuCycle) {
+        this.menuCycleList.remove(menuCycle);
+    }
+
+    public @NotNull Optional<MenuCycle> getMenuCycle(@NotNull Player player) {
+        return this.menuCycleList.stream().filter(menuCycle -> menuCycle.getPlayer().getUniqueId().equals(player.getUniqueId())).findFirst();
     }
 
     public @NotNull Optional<FurnaceMenu> getFurnaceMenu(@NotNull Player player) {
-        return this.furnaceMenuList.stream().filter(furnaceMenu -> furnaceMenu.getPlayer().getUniqueId().equals(player.getUniqueId())).findFirst();
+        return getMenuCycle(player).map(MenuCycle::getFurnaceMenu).stream().findFirst();
     }
 }

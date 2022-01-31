@@ -5,6 +5,7 @@ import lombok.Getter;
 import org.bukkit.craftbukkit.v1_17_R1.inventory.util.CraftTileInventoryConverter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.FurnaceInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
@@ -42,9 +43,6 @@ public class FurnaceMenu implements InventoryHolder {
     Methods
      */
     void init() {
-        virtualFurnace.resume();
-        this.inventory.setItem(0, virtualFurnace.getInput());
-        this.inventory.setItem(1, virtualFurnace.getFuel());
-        this.inventory.setItem(2, virtualFurnace.getOutput());
+        virtualFurnace.resume((FurnaceInventory) this.inventory);
     }
 }

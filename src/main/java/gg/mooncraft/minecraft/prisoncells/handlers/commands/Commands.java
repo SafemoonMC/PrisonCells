@@ -11,7 +11,7 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import gg.mooncraft.minecraft.prisoncells.PrisonCellsMain;
-import gg.mooncraft.minecraft.prisoncells.menu.CellMenu;
+import gg.mooncraft.minecraft.prisoncells.managers.MenuCycle;
 
 /**
  * Commands:
@@ -25,8 +25,9 @@ public final class Commands {
                 .<Player>name("cells").permission(new Permission("prisoncells.cells", PermissionDefault.TRUE))
                 .executes(commandSender -> {
                     PrisonCellsMain.getInstance().getUserManager().readUser(commandSender.getUniqueId()).thenAccept(prisonUser -> {
-                        CellMenu cellMenu = new CellMenu(commandSender, prisonUser);
-                        PrisonCellsMain.getInstance().getScheduler().executeSync(() -> commandSender.openInventory(cellMenu.getInventory()));
+                        MenuCycle menuCycle = new MenuCycle(commandSender, prisonUser);
+                        PrisonCellsMain.getInstance().getScheduler().executeSync(menuCycle::openCellMenu);
+                        PrisonCellsMain.getInstance().getFurnaceManager().addMenuCycle(menuCycle);
                     }).exceptionally(t -> {
                         t.printStackTrace();
                         return null;

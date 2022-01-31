@@ -2,6 +2,7 @@ package gg.mooncraft.minecraft.prisoncells.tasks;
 
 import me.eduardwayland.mooncraft.waylander.scheduler.SchedulerTask;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.FurnaceInventory;
 import org.bukkit.inventory.InventoryView;
@@ -33,8 +34,8 @@ public final class FurnaceTicker implements Runnable {
     Methods
      */
     public void stop() {
-        this.furnaceMenu.getVirtualFurnace().update();
         this.schedulerTask.cancel();
+        Bukkit.broadcastMessage("Cancel ticker");
     }
 
     /*
