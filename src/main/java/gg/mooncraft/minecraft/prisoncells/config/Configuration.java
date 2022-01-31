@@ -13,12 +13,14 @@ public final class Configuration {
     /*
     Fields
      */
+    private final boolean onlyStorage;
     private final @NotNull PricesPrefab pricesPrefab;
 
     /*
     Constructor
      */
     public Configuration(@NotNull FileConfiguration fileConfiguration) {
+        this.onlyStorage = fileConfiguration.getBoolean("only-storage");
         this.pricesPrefab = new PricesPrefab(fileConfiguration.getConfigurationSection("prices"));
     }
 }

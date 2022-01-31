@@ -43,6 +43,7 @@ mysql:
 ####################
 # Settings
 ####################
+only-storage: false
 prices:
   furnaces:
     1: 1000
