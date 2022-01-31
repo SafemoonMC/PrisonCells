@@ -2,7 +2,6 @@ package gg.mooncraft.minecraft.prisoncells.tasks;
 
 import me.eduardwayland.mooncraft.waylander.scheduler.SchedulerTask;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.FurnaceInventory;
 import org.bukkit.inventory.InventoryView;
@@ -35,7 +34,6 @@ public final class FurnaceTicker implements Runnable {
      */
     public void stop() {
         this.schedulerTask.cancel();
-        Bukkit.broadcastMessage("Cancel ticker");
     }
 
     /*
@@ -47,10 +45,12 @@ public final class FurnaceTicker implements Runnable {
         VirtualFurnace virtualFurnace = this.furnaceMenu.getVirtualFurnace();
         virtualFurnace.tick((FurnaceInventory) this.furnaceMenu.getInventory());
 
-        InventoryView view = player.getOpenInventory();
-        view.setProperty(InventoryView.Property.COOK_TIME, virtualFurnace.getCookTime());
-        view.setProperty(InventoryView.Property.TICKS_FOR_CURRENT_SMELTING, virtualFurnace.getCookTimeTotal());
-        view.setProperty(InventoryView.Property.BURN_TIME, virtualFurnace.getFuelTime());
-        view.setProperty(InventoryView.Property.TICKS_FOR_CURRENT_FUEL, virtualFurnace.getFuelTimeTotal());
+        this.furnaceMenu.getInventory().getViewers().forEach(humanEntity -> {
+            InventoryView view = humanEntity.getOpenInventory();
+            view.setProperty(InventoryView.Property.COOK_TIME, virtualFurnace.getCookTime());
+            view.setProperty(InventoryView.Property.TICKS_FOR_CURRENT_SMELTING, virtualFurnace.getCookTimeTotal());
+            view.setProperty(InventoryView.Property.BURN_TIME, virtualFurnace.getFuelTime());
+            view.setProperty(InventoryView.Property.TICKS_FOR_CURRENT_FUEL, virtualFurnace.getFuelTimeTotal());
+        });
     }
 }

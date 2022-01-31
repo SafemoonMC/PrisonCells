@@ -35,8 +35,9 @@ public class FurnaceMenu implements InventoryHolder {
         this.prisonUser = prisonUser;
         this.virtualFurnace = virtualFurnace;
         this.inventory = new CraftTileInventoryConverter.Furnace().createInventory(this, InventoryType.FURNACE);
-        this.furnaceTicker = new FurnaceTicker(this);
         init();
+
+        this.furnaceTicker = new FurnaceTicker(this);
     }
 
     /*

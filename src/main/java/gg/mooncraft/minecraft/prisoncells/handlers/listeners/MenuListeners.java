@@ -113,7 +113,7 @@ public class MenuListeners implements Listener {
             storageMenu.getPrisonUser().updateStorage(itemStackArray);
         }
         PrisonCellsMain.getInstance().getFurnaceManager().getMenuCycle(player).ifPresent(menuCycle -> {
-            if (menuCycle.isLast()) {
+            if (menuCycle.isLast() && e.getReason() != InventoryCloseEvent.Reason.PLUGIN) {
                 menuCycle.getCellMenu().getOwnFurnaceMap().values().forEach(furnaceMenu -> {
                     furnaceMenu.getFurnaceTicker().stop();
                     furnaceMenu.getVirtualFurnace().update();

@@ -38,6 +38,7 @@ public final class MenuCycle {
     public void openCellMenu() {
         flush(true);
         this.cellMenu = new CellMenu(this);
+        this.player.closeInventory(InventoryCloseEvent.Reason.PLUGIN);
         this.player.openInventory(this.cellMenu.getInventory());
     }
 

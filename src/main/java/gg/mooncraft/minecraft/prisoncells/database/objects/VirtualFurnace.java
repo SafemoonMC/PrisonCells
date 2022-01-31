@@ -76,6 +76,7 @@ public final class VirtualFurnace implements EntityChild<PrisonUser> {
     }
 
     public void resume(@NotNull FurnaceInventory furnaceInventory) {
+        if (timestamp == null) return;
         this.resuming = true;
         int ticks = (int) (Duration.between(timestamp.toInstant(), Instant.now()).toMillis() / 20);
 
@@ -120,6 +121,7 @@ public final class VirtualFurnace implements EntityChild<PrisonUser> {
         } else {
             this.cookTime = 0;
             this.cookTimeTotal = 0;
+            this.fuelTime = Math.max(0, this.fuelTime - ticks);
         }
         furnaceInventory.setItem(0, getInput());
         furnaceInventory.setItem(1, getFuel());
@@ -249,7 +251,7 @@ public final class VirtualFurnace implements EntityChild<PrisonUser> {
             if (fuel != null && fuel.getBurnTime() != this.fuelTimeTotal) {
                 necessaryFuelTicks += fuel.getBurnTime() * this.fuel.getAmount();
                 this.fuelTimeTotal = fuel.getBurnTime();
-            } else {
+            } else if (this.fuel != null) {
                 necessaryFuelTicks += this.fuelTimeTotal * this.fuel.getAmount();
             }
         }
