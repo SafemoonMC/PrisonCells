@@ -35,7 +35,7 @@ public class StorageMenu implements InteractiveMenu {
     public StorageMenu(@NotNull Player player, @NotNull PrisonUser prisonUser) {
         this.player = player;
         this.prisonUser = prisonUser;
-        this.inventory = Bukkit.createInventory(this, Math.min(prisonUser.getStorageRows() + 1, 6) * 9, Component.text(ChatColor.GRAY + "YOUR CELL"));
+        this.inventory = Bukkit.createInventory(this, Math.min(prisonUser.getStorageRows() + 1, 6) * 9, Component.text(ChatColor.DARK_GRAY + "Item Storage"));
         init();
     }
 
@@ -63,9 +63,9 @@ public class StorageMenu implements InteractiveMenu {
                     .meta()
                     .consume(meta -> {
                         if (PrisonCellsMain.getInstance().getEconomy().has(player, cost)) {
-                            meta.display(ChatColor.DARK_GREEN + "Click to buy!");
+                            meta.display(ChatColor.GREEN + "Click to buy!");
                         } else {
-                            meta.display(ChatColor.DARK_RED + "Click to buy!");
+                            meta.display(ChatColor.RED + "Click to buy!");
                         }
                     })
                     .lore("&7You can unlock more rows by using your in-game money.\n\n&cCost: &f$%cost%")

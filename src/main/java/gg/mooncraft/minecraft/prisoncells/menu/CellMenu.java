@@ -45,7 +45,7 @@ public class CellMenu implements InteractiveMenu {
      */
     public CellMenu(@NotNull MenuCycle menuCycle) {
         this.menuCycle = menuCycle;
-        this.inventory = Bukkit.createInventory(this, 27, Component.text(ChatColor.GRAY + "CELL MENU"));
+        this.inventory = Bukkit.createInventory(this, 27, Component.text(ChatColor.DARK_GRAY + "Cells"));
         this.ownFurnaceMap = new HashMap<>();
         this.newFurnaceMap = new HashMap<>();
         this.schedulerTask = PrisonCellsMain.getInstance().getScheduler().asyncRepeating(this::updateFurnaces, 50, TimeUnit.MILLISECONDS);
@@ -60,8 +60,14 @@ public class CellMenu implements InteractiveMenu {
         PrisonUser prisonUser = menuCycle.getPrisonUser();
         ItemStack storageItemStack = ItemBuilder.using(Material.CHEST)
                 .meta()
-                .display(ChatColor.GOLD + "Storage " + ChatColor.GRAY + "(Click)")
-                .lore("&7Here you can keep your items safe. It is an upgradeable storage!\n&eCapacity: &f%storage-rows% rows")
+                .display("&aItems Storage")
+                .lore("&7Keep your items safe here. You can upgrade your storage by purchasing additional space within it.")
+                .lore(Arrays.asList(
+                        "",
+                        "&7Capacity: &e%storage-rows%",
+                        "",
+                        "&eClick to open!"
+                ), true)
                 .placeholder(line -> line
                         .replaceAll("%storage-rows%", String.valueOf(prisonUser.getStorageRows()))
                 )
@@ -69,20 +75,17 @@ public class CellMenu implements InteractiveMenu {
         this.inventory.setItem(CellMenuItem.STORAGE.getSlot(), storageItemStack);
 
         ItemStack furnaceItem = getFurnaceItem();
-        ItemStack furnacePlaceholderItem = ItemBuilder.using(Material.WHITE_STAINED_GLASS_PANE)
+        ItemStack furnacePlaceholderItem = ItemBuilder.using(Material.BARRIER)
                 .meta()
-                .display(ChatColor.WHITE + "Furnace #%index% Locked")
-                .lore("&7This is a furnace you can control remotely. To unlock it you must pay &f$%cost%.\nClick here to buy!")
+                .display("&cFurnace - &lLOCKED")
+                .lore("&7Smelt items remotely to sell them for a higher profit!\n\n&7Price: &f$%cost%\n\n&cLOCKED!")
                 .item().stack();
         int furnaceSlot = 13;
         if (prisonUser.getFurnaceCount() > 0) {
-            int index = 1;
             for (VirtualFurnace virtualFurnace : prisonUser.getFurnaceList()) {
-                int finalIndex = index;
                 ItemStack furnace = ItemBuilder.using(furnaceItem.clone())
                         .meta()
                         .placeholder(line -> line
-                                .replaceAll("%index%", String.valueOf(finalIndex))
                                 .replaceAll("%fuel%", DisplayUtilities.getDisplay(virtualFurnace.getFuel()))
                                 .replaceAll("%input%", DisplayUtilities.getDisplay(virtualFurnace.getInput()))
                                 .replaceAll("%output%", DisplayUtilities.getDisplay(virtualFurnace.getOutput()))
@@ -94,7 +97,6 @@ public class CellMenu implements InteractiveMenu {
                         ).item().stack();
                 this.ownFurnaceMap.put(furnaceSlot, new FurnaceMenu(player, prisonUser, virtualFurnace));
                 this.inventory.setItem(furnaceSlot++, furnace);
-                index++;
             }
         }
         if (prisonUser.getFurnaceCount() != 4) {
@@ -126,11 +128,12 @@ public class CellMenu implements InteractiveMenu {
         }
         AtomicInteger counter = new AtomicInteger(1);
         this.ownFurnaceMap.forEach((k, v) -> {
+            int count = counter.getAndIncrement();
             VirtualFurnace virtualFurnace = v.getVirtualFurnace();
             ItemStack furnace = ItemBuilder.using(getFurnaceItem().clone())
                     .meta()
                     .placeholder(line -> line
-                            .replaceAll("%index%", String.valueOf(counter.getAndIncrement()))
+                            .replaceAll("%index%", String.valueOf(count))
                             .replaceAll("%fuel%", DisplayUtilities.getDisplay(virtualFurnace.getFuel()))
                             .replaceAll("%input%", DisplayUtilities.getDisplay(virtualFurnace.getInput()))
                             .replaceAll("%output%", DisplayUtilities.getDisplay(virtualFurnace.getOutput()))
@@ -147,15 +150,15 @@ public class CellMenu implements InteractiveMenu {
     public @NotNull ItemStack getFurnaceItem() {
         return ItemBuilder.using(Material.FURNACE)
                 .meta()
-                .display(ChatColor.GOLD + "Furnace #%index% " + ChatColor.GRAY + "(Click)")
-                .lore("&7This is a personal furnace you can control remotely.")
+                .display("&aFurnace #%index% - &lUNLOCKED")
+                .lore("&7Smelt items remotely to sell them for a higher profit!")
                 .lore(Arrays.asList(
                         "",
                         "&eFuel: &f%fuel% &8(&7%fuel-time%s&8)",
                         "&eCooking: &f%input% &8(&7%input-time%s&8)",
                         "&eTo withdraw: &f%output%",
                         "",
-                        "&2Click to open!"
+                        "&eClick to open!"
                 ), true)
                 .item().stack();
     }
