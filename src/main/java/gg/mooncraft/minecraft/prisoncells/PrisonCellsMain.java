@@ -84,18 +84,18 @@ public class PrisonCellsMain extends JavaPlugin {
             getLogger().severe("The plugin cannot be loaded. Connection to the database cannot be created. Error: ");
             e.printStackTrace();
         }
-
-        // Load economy
-        if (!loadEconomy()) {
-            setEnabled(false);
-            return;
-        }
     }
 
     @Override
     public void onEnable() {
         // Show startup information
         getLogger().info("Database: " + (getDatabase() != null ? "running for " + getDatabase().getIdentifier() : "not started"));
+
+        // Load economy
+        if (!loadEconomy()) {
+            setEnabled(false);
+            return;
+        }
 
         // Stop server if database are not loaded
         if (getDatabase() == null) {
