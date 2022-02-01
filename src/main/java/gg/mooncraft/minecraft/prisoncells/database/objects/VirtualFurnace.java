@@ -81,42 +81,45 @@ public final class VirtualFurnace implements EntityChild<PrisonUser> {
         int ticks = (int) (Duration.between(timestamp.toInstant(), Instant.now()).toMillis() / 20);
 
         if (this.input != null) {
-            int newFuel = calculateFuelAmount(ticks);
-            int newInput = calculateInputAmount(ticks);
-            int newOutput = calculateOutputAmount(ticks);
+            if (this.fuelTime != 0) {
+                int newFuel = calculateFuelAmount(ticks);
+                int newInput = calculateInputAmount(ticks);
+                int newOutput = calculateOutputAmount(ticks);
 
-            int newCookTime = calculateInputTicks(ticks);
-            int newFuelTime = calculateFuelTicks(ticks);
-            int necessaryFuelTime = calculateNecessaryFuelTicks(ticks);
+                int newCookTime = calculateInputTicks(ticks);
+                int newFuelTime = calculateFuelTicks(ticks);
+                int necessaryFuelTime = calculateNecessaryFuelTicks(ticks);
 
-            int fuelTicksUsed = this.fuelTime - newFuelTime;
-            int fuelTicksNeeded = newOutput * this.cookTimeTotal;
-            if (fuelTicksNeeded > necessaryFuelTime) {
-                int threshold = fuelTicksNeeded - necessaryFuelTime;
-                newFuel = 0;
-                newInput += (int) Math.ceil((float) threshold / this.cookTimeTotal);
-                newOutput -= (int) Math.ceil((float) threshold / this.cookTimeTotal);
+                int fuelTicksNeeded = newOutput * this.cookTimeTotal;
+                if (fuelTicksNeeded > necessaryFuelTime) {
+                    int threshold = fuelTicksNeeded - necessaryFuelTime;
+                    newFuel = 0;
+                    newInput += (int) Math.ceil((float) threshold / this.cookTimeTotal);
+                    newOutput -= (int) Math.ceil((float) threshold / this.cookTimeTotal);
 
-                newFuelTime = 0;
-                newCookTime = 0;
-            }
-
-            this.cookTime = newCookTime;
-            this.fuelTime = newFuelTime;
-
-            if (this.fuel != null) {
-                this.fuel.setAmount(newFuel);
-            }
-            if (this.input != null) {
-                this.input.setAmount(newInput);
-            }
-            if (this.output != null) {
-                this.output.setAmount(this.output.getAmount() + newOutput);
-            } else {
-                VirtualFurnaceRecipe virtualFurnaceRecipe = FurnaceUtilities.getRecipeByIngredient(this.input.getType());
-                if (virtualFurnaceRecipe != null) {
-                    this.output = new ItemStack(virtualFurnaceRecipe.getResult(), newOutput);
+                    newFuelTime = 0;
+                    newCookTime = 0;
                 }
+
+                this.cookTime = newCookTime;
+                this.fuelTime = newFuelTime;
+
+                if (this.fuel != null) {
+                    this.fuel.setAmount(newFuel);
+                }
+                if (this.input != null) {
+                    this.input.setAmount(newInput);
+                }
+                if (this.output != null) {
+                    this.output.setAmount(this.output.getAmount() + newOutput);
+                } else {
+                    VirtualFurnaceRecipe virtualFurnaceRecipe = FurnaceUtilities.getRecipeByIngredient(this.input.getType());
+                    if (virtualFurnaceRecipe != null) {
+                        this.output = new ItemStack(virtualFurnaceRecipe.getResult(), newOutput);
+                    }
+                }
+            } else {
+                this.cookTime = 0;
             }
         } else {
             this.cookTime = 0;
@@ -189,6 +192,8 @@ public final class VirtualFurnace implements EntityChild<PrisonUser> {
             this.input.setAmount(this.input.getAmount() - 1);
         } else {
             this.input = null;
+            this.cookTime = 0;
+            this.cookTimeTotal = 0;
         }
         this.experience += virtualFurnaceRecipe.getExperience();
         updateInventory(furnaceInventory);
@@ -243,11 +248,10 @@ public final class VirtualFurnace implements EntityChild<PrisonUser> {
     }
 
     private int calculateNecessaryFuelTicks(int ticks) {
-        int necessaryFuelTicks = 0;
+        int necessaryFuelTicks = this.fuelTime;
         if (this.fuel != null) {
             Fuel fuel = FurnaceUtilities.getFuelByMaterial(this.fuel.getType());
 
-            necessaryFuelTicks = this.fuelTime;
             if (fuel != null && fuel.getBurnTime() != this.fuelTimeTotal) {
                 necessaryFuelTicks += fuel.getBurnTime() * this.fuel.getAmount();
                 this.fuelTimeTotal = fuel.getBurnTime();
@@ -268,10 +272,14 @@ public final class VirtualFurnace implements EntityChild<PrisonUser> {
     private int calculateFuelTicks(int ticks) {
         int necessaryFuelTicks = calculateNecessaryFuelTicks(ticks);
         int newFuelTicks = Math.max(0, necessaryFuelTicks - ticks);
-        return newFuelTicks % this.fuelTimeTotal;
+        return this.fuelTimeTotal == 0 ? 0 : newFuelTicks % this.fuelTimeTotal;
     }
 
     private int calculateInputAmount(int ticks) {
+        if (this.cookTime == 0 || this.cookTimeTotal == 0) {
+            return this.input == null ? 0 : this.input.getAmount();
+        }
+
         int necessaryCookTicks = getCookTimeTotal() * this.input.getAmount();
         int cookTicks = ticks + getCookTime();
         int newCookTicks = Math.max(0, necessaryCookTicks - cookTicks);
@@ -284,7 +292,7 @@ public final class VirtualFurnace implements EntityChild<PrisonUser> {
         int cookTicks = ticks + getCookTime();
         int newCookTicks = Math.max(0, necessaryCookTicks - cookTicks);
 
-        return this.cookTimeTotal - (newCookTicks % this.cookTimeTotal);
+        return this.cookTimeTotal == 0 ? 0 : this.cookTime == 0 ? 0 : this.cookTimeTotal - (newCookTicks % this.cookTimeTotal);
     }
 
     private int calculateOutputAmount(int ticks) {

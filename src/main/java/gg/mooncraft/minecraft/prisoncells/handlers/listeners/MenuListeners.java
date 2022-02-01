@@ -1,6 +1,7 @@
 package gg.mooncraft.minecraft.prisoncells.handlers.listeners;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -123,6 +124,24 @@ public class MenuListeners implements Listener {
             }
 
             if ((menuCycle.getStorageMenu() != null || menuCycle.getFurnaceMenu() != null) && e.getReason() != InventoryCloseEvent.Reason.PLUGIN) {
+                if (menuCycle.getFurnaceMenu() != null) {
+                    ItemStack input = menuCycle.getFurnaceMenu().getInventory().getItem(0);
+                    if (input != null) {
+                        Material material = input.getType();
+                        if (FurnaceUtilities.getRecipeByIngredient(material) == null) {
+                            menuCycle.getFurnaceMenu().getInventory().setItem(0, null);
+                            player.getInventory().addItem(input).forEach((k, v) -> player.getWorld().dropItem(player.getLocation(), v));
+                        }
+                    }
+                    ItemStack fuel = menuCycle.getFurnaceMenu().getInventory().getItem(1);
+                    if (fuel != null) {
+                        Material material = fuel.getType();
+                        if (FurnaceUtilities.getFuelByMaterial(material) == null) {
+                            menuCycle.getFurnaceMenu().getInventory().setItem(1, null);
+                            player.getInventory().addItem(fuel).forEach((k, v) -> player.getWorld().dropItem(player.getLocation(), v));
+                        }
+                    }
+                }
                 Bukkit.getScheduler().runTaskLater(PrisonCellsMain.getInstance(), menuCycle::openCellMenu, 5);
             }
         });

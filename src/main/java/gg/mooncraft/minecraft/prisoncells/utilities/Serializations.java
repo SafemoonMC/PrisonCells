@@ -14,7 +14,7 @@ import java.io.ByteArrayOutputStream;
 public final class Serializations {
 
     public static byte[] toByteArray(ItemStack... itemStack) {
-        if (itemStack == null) return null;
+        if (itemStack == null || itemStack.length == 0) return null;
 
         try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
              BukkitObjectOutputStream bukkitObjectOutputStream = new BukkitObjectOutputStream(byteArrayOutputStream)) {
@@ -34,18 +34,18 @@ public final class Serializations {
     }
 
     public static ItemStack[] fromByteArray(byte[] bytes) {
-        if (bytes == null) return null;
+        if (bytes == null || bytes.length == 0) return null;
 
         try (ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
              BukkitObjectInputStream bukkitObjectInputStream = new BukkitObjectInputStream(inputStream)) {
             ItemStack[] items = new ItemStack[bukkitObjectInputStream.readInt()];
 
-            for (int Index = 0; Index < items.length; Index++) {
+            for (int index = 0; index < items.length; index++) {
                 byte[] stack = (byte[]) bukkitObjectInputStream.readObject();
                 if (stack != null) {
-                    items[Index] = ItemStack.deserializeBytes(stack);
+                    items[index] = ItemStack.deserializeBytes(stack);
                 } else {
-                    items[Index] = null;
+                    items[index] = null;
                 }
             }
             return items;
