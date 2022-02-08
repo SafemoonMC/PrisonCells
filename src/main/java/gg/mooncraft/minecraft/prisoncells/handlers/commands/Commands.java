@@ -31,9 +31,11 @@ public final class Commands {
                             PrisonCellsMain.getInstance().getScheduler().executeSync(() -> commandSender.openInventory(storageMenu.getInventory()));
                             return;
                         }
-                        MenuCycle menuCycle = new MenuCycle(commandSender, prisonUser);
-                        PrisonCellsMain.getInstance().getScheduler().executeSync(menuCycle::openCellMenu);
-                        PrisonCellsMain.getInstance().getFurnaceManager().addMenuCycle(menuCycle);
+                        if (!PrisonCellsMain.getInstance().getUserManager().hasCooldown(commandSender)) {
+                            MenuCycle menuCycle = new MenuCycle(commandSender, prisonUser);
+                            PrisonCellsMain.getInstance().getScheduler().executeSync(menuCycle::openCellMenu);
+                            PrisonCellsMain.getInstance().getFurnaceManager().addMenuCycle(menuCycle);
+                        }
                     }).exceptionally(t -> {
                         t.printStackTrace();
                         return null;

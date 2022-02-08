@@ -42,6 +42,7 @@ public class MenuListeners implements Listener {
             });
             PrisonCellsMain.getInstance().getFurnaceManager().delMenuCycle(menuCycle);
         });
+        PrisonCellsMain.getInstance().getUserManager().delCooldown(player);
     }
 
     @EventHandler
