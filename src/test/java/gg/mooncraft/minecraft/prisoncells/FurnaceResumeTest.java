@@ -50,7 +50,7 @@ public class FurnaceResumeTest {
      * Fuel time total: 1600
      *
      * Expected result after 100 ticks:
-     * - Cook time = 200
+     * - Cook time = 0
      * - Fuel time = 1400
      * - Fuel = 10
      * - Input = 9
@@ -73,7 +73,7 @@ public class FurnaceResumeTest {
 
         virtualFurnace.resume();
 
-        assert virtualFurnace.getCookTime() == 200;
+        assert virtualFurnace.getCookTime() == 0;
         assert virtualFurnace.getFuelTime() == 1400;
         assert virtualFurnace.getFuel().getAmount() == 10;
         assert virtualFurnace.getInput().getAmount() == 9;
@@ -132,7 +132,7 @@ public class FurnaceResumeTest {
      *
      * Expected result after 2000 ticks:
      * - Cook time = 200
-     * - Fuel time = 600
+     * - Fuel time = 700
      * - Fuel = 9
      * - Input = 0
      * - Output = 10
@@ -155,10 +155,10 @@ public class FurnaceResumeTest {
 
         virtualFurnace.resume();
 
-        assert virtualFurnace.getCookTime() == 200;
-        assert virtualFurnace.getFuelTime() == 600;
+        assert virtualFurnace.getCookTime() == 0;
+        assert virtualFurnace.getFuelTime() == 700;
         assert virtualFurnace.getFuel().getAmount() == 9;
-        assert virtualFurnace.getInput().getAmount() == 0;
+        assert virtualFurnace.getInput() == null || virtualFurnace.getInput().getAmount() == 0;
         assert virtualFurnace.getOutput().getAmount() == 10;
     }
 
@@ -242,5 +242,47 @@ public class FurnaceResumeTest {
         assert virtualFurnace.getFuel().getAmount() == 0;
         assert virtualFurnace.getInput().getAmount() == 4;
         assert virtualFurnace.getOutput().getAmount() == 6;
+    }
+
+    /**
+     * Fuel: Acacia Wood x2
+     * Input: Iron Ore x10
+     * Output: Iron Ore x63
+     *
+     * Cook time: 100
+     * Cook time total: 200
+     * Fuel time: 600
+     * Fuel time total: 1600
+     *
+     * Expected result after 2000 ticks:
+     * - Cook time = 0
+     * - Fuel time = 0
+     * - Fuel = 0
+     * - Input = 4
+     * - Output = 64
+     */
+    @Test
+    void testEasySix() {
+        System.out.println("Initializing testEasyFive()");
+        int ticks = 2000;
+        Timestamp timestamp = Timestamp.from(Instant.ofEpochMilli(System.currentTimeMillis() - (ticks * 20)));
+        MockVirtualFurnace virtualFurnace = new MockVirtualFurnace(
+                new ItemStack(Material.ACACIA_WOOD, 2),
+                new ItemStack(Material.IRON_ORE, 10),
+                new ItemStack(Material.IRON_INGOT, 63),
+                0,
+                200,
+                600,
+                1600,
+                0,
+                timestamp);
+
+        virtualFurnace.resume();
+
+        assert virtualFurnace.getCookTime() == 0;
+        assert virtualFurnace.getFuelTime() == 400;
+        assert virtualFurnace.getFuel().getAmount() == 2;
+        assert virtualFurnace.getInput().getAmount() == 9;
+        assert virtualFurnace.getOutput().getAmount() == 64;
     }
 }

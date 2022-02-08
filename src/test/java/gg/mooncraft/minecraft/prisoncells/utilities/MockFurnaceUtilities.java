@@ -89,7 +89,7 @@ public class MockFurnaceUtilities {
                 virtualFurnaceRecipeMap.put(createKey(String.format(FURNACE_KEY_FORMAT, furnaceRecipe.getKey().getKey())), newFurnaceRecipe);
             }
         });
-
+        virtualFurnaceRecipeMap.put(createKey(String.format(FURNACE_KEY_FORMAT, "iron_ingot")), new VirtualFurnaceRecipe(createKey(String.format(FURNACE_KEY_FORMAT, "iron_ingot")), Material.IRON_ORE, Material.IRON_INGOT, 200));
         // Assign unmodifiable version of the maps
         VANILLA_FUELS = Collections.unmodifiableMap(vanillaFuelMap);
         VANILLA_FURNACE_RECIPES = Collections.unmodifiableMap(virtualFurnaceRecipeMap);
