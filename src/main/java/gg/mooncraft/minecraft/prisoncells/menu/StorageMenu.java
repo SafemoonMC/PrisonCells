@@ -69,7 +69,7 @@ public class StorageMenu implements InteractiveMenu {
                         }
                     })
                     .lore("&7You can unlock more rows by using your in-game money.\n\n&cCost: &f$%cost%")
-                    .placeholder(line -> line
+                    .placeholders(line -> line
                             .replaceAll("%cost%", String.valueOf(cost)))
                     .item().stack();
             this.inventory.setItem(startingSlot + 4, buyButton);

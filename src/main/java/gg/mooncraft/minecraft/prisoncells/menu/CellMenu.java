@@ -68,7 +68,7 @@ public class CellMenu implements InteractiveMenu {
                         "",
                         "&eClick to open!"
                 ), true)
-                .placeholder(line -> line
+                .placeholders(line -> line
                         .replaceAll("%storage-rows%", String.valueOf(prisonUser.getStorageRows()))
                 )
                 .item().stack();
@@ -85,7 +85,7 @@ public class CellMenu implements InteractiveMenu {
             for (VirtualFurnace virtualFurnace : prisonUser.getFurnaceList()) {
                 ItemStack furnace = ItemBuilder.using(furnaceItem.clone())
                         .meta()
-                        .placeholder(line -> line
+                        .placeholders(line -> line
                                 .replaceAll("%fuel%", DisplayUtilities.getDisplay(virtualFurnace.getFuel()))
                                 .replaceAll("%input%", DisplayUtilities.getDisplay(virtualFurnace.getInput()))
                                 .replaceAll("%output%", DisplayUtilities.getDisplay(virtualFurnace.getOutput()))
@@ -104,7 +104,7 @@ public class CellMenu implements InteractiveMenu {
                 int index = i + 1;
                 ItemStack placeholder = ItemBuilder.using(furnacePlaceholderItem.clone())
                         .meta()
-                        .placeholder(line -> line
+                        .placeholders(line -> line
                                 .replaceAll("%index%", String.valueOf(index))
                                 .replaceAll("%cost%", String.valueOf(PrisonCellsMain.getInstance().getConfiguration().getPricesPrefab().getFurnaceCost(index)))
                         ).item().stack();
@@ -132,7 +132,7 @@ public class CellMenu implements InteractiveMenu {
             VirtualFurnace virtualFurnace = v.getVirtualFurnace();
             ItemStack furnace = ItemBuilder.using(getFurnaceItem().clone())
                     .meta()
-                    .placeholder(line -> line
+                    .placeholders(line -> line
                             .replaceAll("%index%", String.valueOf(count))
                             .replaceAll("%fuel%", DisplayUtilities.getDisplay(virtualFurnace.getFuel()))
                             .replaceAll("%input%", DisplayUtilities.getDisplay(virtualFurnace.getInput()))
