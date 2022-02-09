@@ -36,10 +36,12 @@ public class MenuListeners implements Listener {
     public void on(@NotNull PlayerQuitEvent e) {
         Player player = e.getPlayer();
         PrisonCellsMain.getInstance().getFurnaceManager().getMenuCycle(player).ifPresent(menuCycle -> {
-            menuCycle.getCellMenu().getOwnFurnaceMap().values().forEach(furnaceMenu -> {
-                furnaceMenu.getFurnaceTicker().stop();
-                furnaceMenu.getVirtualFurnace().update();
-            });
+            if (menuCycle.getCellMenu() != null) {
+                menuCycle.getCellMenu().getOwnFurnaceMap().values().forEach(furnaceMenu -> {
+                    furnaceMenu.getFurnaceTicker().stop();
+                    furnaceMenu.getVirtualFurnace().update();
+                });
+            }
             PrisonCellsMain.getInstance().getFurnaceManager().delMenuCycle(menuCycle);
         });
         PrisonCellsMain.getInstance().getUserManager().delCooldown(player);

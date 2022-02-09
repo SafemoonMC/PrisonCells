@@ -126,11 +126,15 @@ public final class VirtualFurnace implements EntityChild<PrisonUser> {
             this.fuel.setAmount(fuelAmount);
         }
         if (this.output != null) {
-            this.experience += (this.input.getAmount() - inputAmount) * FurnaceUtilities.getRecipeByIngredient(this.input.getType()).getExperience();
-            this.output.setAmount(this.output.getAmount() + (this.input.getAmount() - inputAmount));
+            if (this.input != null) {
+                this.experience += (this.input.getAmount() - inputAmount) * FurnaceUtilities.getRecipeByIngredient(this.input.getType()).getExperience();
+                this.output.setAmount(this.output.getAmount() + (this.input.getAmount() - inputAmount));
+            }
         } else {
-            this.experience += (this.input.getAmount() - inputAmount) * FurnaceUtilities.getRecipeByIngredient(this.input.getType()).getExperience();
-            this.output = new ItemStack(FurnaceUtilities.getRecipeByIngredient(this.input.getType()).getResult(), (this.input.getAmount() - inputAmount));
+            if (this.input != null) {
+                this.experience += (this.input.getAmount() - inputAmount) * FurnaceUtilities.getRecipeByIngredient(this.input.getType()).getExperience();
+                this.output = new ItemStack(FurnaceUtilities.getRecipeByIngredient(this.input.getType()).getResult(), (this.input.getAmount() - inputAmount));
+            }
         }
         if (this.input != null) {
             if (inputAmount != 0) {
