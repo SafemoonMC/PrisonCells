@@ -51,7 +51,7 @@ public class StorageMenu implements InteractiveMenu {
             }
         }
         if (prisonUser.getStorageRows() != 6) {
-            int startingSlot = prisonUser.getStorageRows() * 9;
+            int startingSlot = (prisonUser.getStorageRows() * 9);
             ItemStack itemStack = ItemBuilder.using(Material.WHITE_STAINED_GLASS_PANE).meta().display(ChatColor.RESET + "").item().stack();
             for (int i = startingSlot; i < startingSlot + 9; i++) {
                 this.inventory.setItem(i, itemStack);
@@ -82,6 +82,7 @@ public class StorageMenu implements InteractiveMenu {
      */
     @Override
     public boolean click(int slot) {
+        if (prisonUser.getStorageRows() == 6) return true;
         if ((slot >= (buyButtonSlot - 4) && slot < buyButtonSlot) || (slot > buyButtonSlot && slot <= buyButtonSlot + 4)) {
             return false;
         }
