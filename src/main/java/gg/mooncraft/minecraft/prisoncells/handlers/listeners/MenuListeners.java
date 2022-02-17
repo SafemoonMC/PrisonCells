@@ -54,7 +54,7 @@ public class MenuListeners implements Listener {
         Inventory inventory = e.getInventory();
 
         if (inventory.getHolder() instanceof InteractiveMenu interactiveMenu) {
-            e.setCancelled(!interactiveMenu.click(e.getSlot()));
+            e.setCancelled(!interactiveMenu.click(e, e.getSlot()));
             return;
         }
         PrisonCellsMain.getInstance().getFurnaceManager().getFurnaceMenu(player).ifPresent(furnaceMenu -> {

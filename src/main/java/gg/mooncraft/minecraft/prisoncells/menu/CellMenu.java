@@ -11,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -167,7 +168,11 @@ public class CellMenu implements InteractiveMenu {
     Override Methods
      */
     @Override
-    public boolean click(int slot) {
+    public boolean click(@NotNull InventoryClickEvent e, int slot) {
+        if (e.getClickedInventory() != null && !e.getClickedInventory().equals(e.getInventory())) {
+            return false;
+        }
+
         Player player = menuCycle.getPlayer();
         PrisonUser prisonUser = menuCycle.getPrisonUser();
 

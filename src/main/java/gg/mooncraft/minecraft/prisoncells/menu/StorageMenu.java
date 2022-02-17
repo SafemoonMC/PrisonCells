@@ -10,6 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -81,12 +82,14 @@ public class StorageMenu implements InteractiveMenu {
     Override Methods
      */
     @Override
-    public boolean click(int slot) {
+    public boolean click(@NotNull InventoryClickEvent e, int slot) {
         if (prisonUser.getStorageRows() == 6) return true;
-        if ((slot >= (buyButtonSlot - 4) && slot < buyButtonSlot) || (slot > buyButtonSlot && slot <= buyButtonSlot + 4)) {
+        boolean rightInventory = e.getClickedInventory() != null && e.getClickedInventory().equals(e.getInventory());
+
+        if (rightInventory && (slot >= (buyButtonSlot - 4) && slot < buyButtonSlot) || (slot > buyButtonSlot && slot <= buyButtonSlot + 4)) {
             return false;
         }
-        if (slot == buyButtonSlot) {
+        if (rightInventory && slot == buyButtonSlot) {
             int cost = PrisonCellsMain.getInstance().getConfiguration().getPricesPrefab().getStorageRowCost(prisonUser.getStorageRows() + 1);
             if (!PrisonCellsMain.getInstance().getEconomy().has(player, cost)) {
                 return false;
